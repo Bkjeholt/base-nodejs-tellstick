@@ -1,0 +1,65 @@
+# ************************************************************************
+# Product    : Home information and control
+# Date       : 2016-12-08
+# Copyright  : Copyright (C) 2016 Kjeholt Engineering. All rights reserved.
+# Contact    : dev@kjeholt.se
+# Url        : http://www-dev.kjeholt.se
+# Licence    : ---
+# -------------------------------------------------------------------------
+# File       : base-nodejs-ts/Dockerfile-rpi
+# Version    : 1.1.0
+# Author     : Bjorn Kjeholt
+# *************************************************************************
+
+FROM hypriot/rpi-node:latest
+
+MAINTAINER Björn Kjeholt <dev@kjeholt.se>
+
+RUN apt-get update && \
+    apt-get install -y vim \
+                       wget \
+                       gcc \
+                       cmake \
+                       build-essential \
+                       libconfuse-dev \
+                       libftdi-dev \
+                       help2man && \
+    apt-get clean 
+
+# Add Telldus repository
+RUN echo "deb-src http://download.telldus.com/debian/ stable main" >> /etc/apt/sources.list.d/telldus.list && \
+    wget http://download.telldus.se/debian/telldus-public.key && \
+    apt-key add telldus-public.key && \
+    rm telldus-public.key
+
+# Install dependencies. Compile and install telldusd
+RUN apt-get update && \
+    apt-get build-dep -y telldus-core && \
+    apt-get --compile source telldus-core && \
+    dpkg --install *.deb
+
+# COPY telldusd.service /lib/systemd/system/telldusd.service
+
+RUN mkdir -p /usr/src/app
+WORKDIR /usr/src/app
+
+RUN npm install mqtt@1.7.3 && \
+    npm install jontelldus@1.0.5
+
+# Load the package.json control file
+ONBUILD COPY package.json package.json
+
+# Load configuration file(s)
+ONBUILD COPY Configs/tellstick.conf /etc/tellstick.conf
+
+# Bundle app source
+ONBUILD COPY js /usr/src/app/js
+
+# Install app dependencies
+
+ONBUILD RUN npm install
+
+# HEALTHCHECK CMD tdtool --list || exit 1
+
+# ENTRYPOINT ["/usr/bin/entry.sh","telldusd"]
+ONBUILD CMD [ "npm", "start" ]
