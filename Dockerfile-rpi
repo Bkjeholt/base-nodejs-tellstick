@@ -46,7 +46,7 @@ RUN apt-get update && \
 
 # COPY telldusd.service /lib/systemd/system/telldusd.service
 
-RUN mkdir -p /usr/src/app/js && 
+RUN mkdir -p /usr/src/app/js && \
     mkdir -p /usr/src/app/script
 WORKDIR /usr/src/app
 
