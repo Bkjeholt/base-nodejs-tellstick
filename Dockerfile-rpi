@@ -15,12 +15,6 @@ FROM hypriot/rpi-node:latest
 
 MAINTAINER Björn Kjeholt <dev@kjeholt.se>
 
-ARG DOCKER_IMAGE_NAME
-ARG DOCKER_IMAGE_TAG
-
-ENV DOCKER_BASE_IMAGE_NAME ${DOCKER_IMAGE_NAME:-UnknownName}
-ENV DOCKER_BASE_IMAGE_TAG  ${DOCKER_IMAGE_TAG:-UnknownTag}
-
 RUN apt-get update && \
     apt-get install -y vim \
                        wget \
@@ -49,6 +43,13 @@ RUN apt-get update && \
 RUN mkdir -p /usr/src/app/js && \
     mkdir -p /usr/src/app/script
 WORKDIR /usr/src/app
+
+ARG DOCKER_IMAGE_NAME
+ARG DOCKER_IMAGE_TAG
+
+ENV DOCKER_BASE_IMAGE_NAME ${DOCKER_IMAGE_NAME:-UnknownName}
+ENV DOCKER_BASE_IMAGE_TAG  ${DOCKER_IMAGE_TAG:-UnknownTag}
+
 
 # RUN npm install mqtt@1.7.3 && \
 #     npm install jontelldus@1.0.5
