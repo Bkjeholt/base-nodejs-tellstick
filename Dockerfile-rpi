@@ -51,8 +51,9 @@ ENV DOCKER_BASE_IMAGE_NAME ${DOCKER_IMAGE_NAME:-UnknownName}
 ENV DOCKER_BASE_IMAGE_TAG  ${DOCKER_IMAGE_TAG:-UnknownTag}
 
 
-# RUN npm install mqtt@1.7.3 && \
-#     npm install jontelldus@1.0.5
+RUN npm install mqtt@1.7.3 && \
+    npm install node-gyp@3.5.0 && \
+    npm install telldus@1.1.2
 
 # Load the package.json control file
 ONBUILD COPY package.json package.json
